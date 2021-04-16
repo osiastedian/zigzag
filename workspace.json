@@ -1,0 +1,125 @@
+{
+  "version": 2,
+  "cli": {
+    "defaultCollection": "@nrwl/react"
+  },
+  "defaultProject": "robot-factory",
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
+  },
+  "projects": {
+    "robot-factory": {
+      "root": "apps/robot-factory",
+      "sourceRoot": "apps/robot-factory/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/web:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/robot-factory",
+            "index": "apps/robot-factory/src/index.html",
+            "main": "apps/robot-factory/src/main.tsx",
+            "polyfills": "apps/robot-factory/src/polyfills.ts",
+            "tsConfig": "apps/robot-factory/tsconfig.app.json",
+            "assets": [
+              "apps/robot-factory/src/favicon.ico",
+              "apps/robot-factory/src/assets"
+            ],
+            "styles": ["apps/robot-factory/src/styles.scss"],
+            "scripts": [],
+            "webpackConfig": "@nrwl/react/plugins/webpack"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/robot-factory/src/environments/environment.ts",
+                  "with": "apps/robot-factory/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "robot-factory:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "robot-factory:build:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/robot-factory/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/robot-factory"],
+          "options": {
+            "jestConfig": "apps/robot-factory/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "robot-factory-e2e": {
+      "root": "apps/robot-factory-e2e",
+      "sourceRoot": "apps/robot-factory-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/robot-factory-e2e/cypress.json",
+            "tsConfig": "apps/robot-factory-e2e/tsconfig.e2e.json",
+            "devServerTarget": "robot-factory:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "robot-factory:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/robot-factory-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    }
+  }
+}
