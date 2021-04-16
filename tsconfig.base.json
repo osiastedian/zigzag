@@ -15,7 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@zigzag/robot-factory/shared": ["libs/robot-factory/shared/src/index.ts"]
+      "@zigzag/robot-factory/shared": [
+        "libs/robot-factory/shared/src/index.ts"
+      ],
+      "@zigzag/robot-inventory": ["libs/robot-inventory/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
