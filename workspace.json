@@ -28,7 +28,9 @@
       "targets": {
         "build": {
           "executor": "@nrwl/web:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/robot-factory",
             "index": "apps/robot-factory/src/index.html",
@@ -39,7 +41,9 @@
               "apps/robot-factory/src/favicon.ico",
               "apps/robot-factory/src/assets"
             ],
-            "styles": ["apps/robot-factory/src/styles.scss"],
+            "styles": [
+              "apps/robot-factory/src/styles.scss"
+            ],
             "scripts": [],
             "webpackConfig": "@nrwl/react/plugins/webpack"
           },
@@ -71,7 +75,8 @@
         "serve": {
           "executor": "@nrwl/web:dev-server",
           "options": {
-            "buildTarget": "robot-factory:build"
+            "buildTarget": "robot-factory:build",
+            "proxyConfig": "apps/robot-factory/proxy.conf.json"
           },
           "configurations": {
             "production": {
@@ -82,12 +87,16 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/robot-factory/**/*.{ts,tsx,js,jsx}"]
+            "lintFilePatterns": [
+              "apps/robot-factory/**/*.{ts,tsx,js,jsx}"
+            ]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/robot-factory"],
+          "outputs": [
+            "coverage/apps/robot-factory"
+          ],
           "options": {
             "jestConfig": "apps/robot-factory/jest.config.js",
             "passWithNoTests": true
@@ -116,7 +125,67 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/robot-factory-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/robot-factory-e2e/**/*.{js,ts}"
+            ]
+          }
+        }
+      }
+    },
+    "robot-factory-api": {
+      "root": "apps/robot-factory-api",
+      "sourceRoot": "apps/robot-factory-api/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/apps/robot-factory-api",
+            "main": "apps/robot-factory-api/src/main.ts",
+            "tsConfig": "apps/robot-factory-api/tsconfig.app.json",
+            "assets": [
+              "apps/robot-factory-api/src/assets"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/robot-factory-api/src/environments/environment.ts",
+                  "with": "apps/robot-factory-api/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "robot-factory-api:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/robot-factory-api/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/apps/robot-factory-api"
+          ],
+          "options": {
+            "jestConfig": "apps/robot-factory-api/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }

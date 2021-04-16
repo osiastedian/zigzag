@@ -1,3 +1,6 @@
 module.exports = {
-  projects: ['<rootDir>/apps/robot-factory'],
+  projects: [
+    '<rootDir>/apps/robot-factory',
+    '<rootDir>/apps/robot-factory-api',
+  ],
 };
