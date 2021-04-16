@@ -17,6 +17,7 @@
       "tags": [],
       "implicitDependencies": ["robot-factory"]
     },
+    "robot-factory-shared": { "tags": [] },
     "robot-factory-api": { "tags": [] }
   }
 }

@@ -132,6 +132,31 @@
         }
       }
     },
+    "robot-factory-shared": {
+      "root": "libs/robot-factory/shared",
+      "sourceRoot": "libs/robot-factory/shared/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/robot-factory/shared/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/robot-factory/shared"
+          ],
+          "options": {
+            "jestConfig": "libs/robot-factory/shared/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "robot-factory-api": {
       "root": "apps/robot-factory-api",
       "sourceRoot": "apps/robot-factory-api/src",
