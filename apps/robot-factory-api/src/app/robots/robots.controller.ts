@@ -11,6 +11,11 @@ export class RobotsController {
     return this.robotsService.getRobots();
   }
 
+  @Get('/reset')
+  resetRobots(): void {
+    return this.robotsService.reset();
+  }
+
   @Post(':id/extinguish')
   extinguishRobot(@Param('id') robotId: RobotId) {
     const success = this.robotsService.extinguishRobotById(+robotId);

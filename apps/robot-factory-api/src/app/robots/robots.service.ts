@@ -3,47 +3,51 @@ import { Robot, RobotId, RobotStatus } from '@zigzag/robot-factory/shared';
 
 @Injectable()
 export class RobotsService {
-  robots: Robot[] = [
-    {
-      id: 1,
-      configuration: {
-        hasWheels: true,
-        Colour: 'red',
-        hasSentence: false,
-        hasTracks: true,
-        numberOfRotors: 5,
-      },
-      name: 'Robot 1',
-      status: [RobotStatus.ON_FIRE],
-    },
-    {
-      id: 2,
-      configuration: {
-        hasWheels: true,
-        Colour: 'blue',
-        hasSentence: false,
-        hasTracks: true,
-        numberOfRotors: 1,
-      },
-      name: 'Robot 2',
-      status: [RobotStatus.LOOSE_SCREWS],
-    },
-    {
-      id: 3,
-      configuration: {
-        hasWheels: true,
-        Colour: 'blue',
-        hasSentence: true,
-        hasTracks: true,
-        numberOfRotors: 3,
-      },
-      name: 'Robot 3',
-      status: [RobotStatus.ON_FIRE],
-    },
-  ];
+  robots: Robot[] = [];
 
   getRobots(): Robot[] {
     return this.robots;
+  }
+
+  reset(): void {
+    this.robots = [
+      {
+        id: 1,
+        configuration: {
+          hasWheels: true,
+          Colour: 'red',
+          hasSentence: false,
+          hasTracks: true,
+          numberOfRotors: 5,
+        },
+        name: 'Robot 1',
+        status: [RobotStatus.ON_FIRE],
+      },
+      {
+        id: 2,
+        configuration: {
+          hasWheels: true,
+          Colour: 'blue',
+          hasSentence: false,
+          hasTracks: true,
+          numberOfRotors: 1,
+        },
+        name: 'Robot 2',
+        status: [RobotStatus.LOOSE_SCREWS],
+      },
+      {
+        id: 3,
+        configuration: {
+          hasWheels: true,
+          Colour: 'blue',
+          hasSentence: true,
+          hasTracks: true,
+          numberOfRotors: 3,
+        },
+        name: 'Robot 3',
+        status: [RobotStatus.ON_FIRE],
+      },
+    ];
   }
 
   deleteRobotById(robotId: RobotId): Robot {

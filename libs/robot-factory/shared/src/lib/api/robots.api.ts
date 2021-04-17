@@ -6,15 +6,18 @@ const fetchRobots = () => {
 };
 
 const extinguishRobot = (robotId: RobotId) =>
-  axios.post<RobotId>(`/api/robots/${robotId}/extinguish`);
+  axios.post<Robot>(`/api/robots/${robotId}/extinguish`);
 
 const recycleRobots = (robotIds: RobotId[]) =>
-  axios.post<RobotId>(`/api/robots/recycle`, robotIds);
+  axios.post<Robot[]>(`/api/robots/recycle`, robotIds);
+
+const resetRobots = () => axios.get<Robot[]>('/api/robots/reset');
 
 export const RobotsApi = {
   fetchRobots,
   extinguishRobot,
   recycleRobots,
+  resetRobots,
 };
 
 export default RobotsApi;

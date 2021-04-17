@@ -1,12 +1,13 @@
 import { Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Robot } from '@zigzag/robot-factory/shared';
+import { Restore } from '@material-ui/icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createShipment,
   extinguishRobot,
   recycleRobots,
+  resetRobots,
   selectedEntities,
   selectOnFireRobots,
   selectRecyclableRobots,
@@ -42,8 +43,12 @@ export function RobotActions(props: RobotActionsProps) {
     dispatch(createShipment(selectedRobots));
   };
 
+  const handleResetRobots = () => {
+    dispatch(resetRobots());
+  };
+
   return (
-    <Box>
+    <Box display="flex">
       <Button
         variant="contained"
         color="secondary"
@@ -70,6 +75,16 @@ export function RobotActions(props: RobotActionsProps) {
       >
         Ship!
       </Button>
+      <Box ml={'auto'}>
+        <Button
+          onClick={handleResetRobots}
+          variant="contained"
+          color="secondary"
+          startIcon={<Restore />}
+        >
+          Reset
+        </Button>
+      </Box>
     </Box>
   );
 }

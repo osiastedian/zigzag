@@ -31,7 +31,8 @@ export interface RobotInventoryState extends EntityState<RobotInventoryEntity> {
     | 'error'
     | 'extinguishing'
     | 'recycling'
-    | 'creating_shipment';
+    | 'creating_shipment'
+    | 'reset';
   error: string;
 }
 
@@ -72,6 +73,8 @@ export const extinguishRobot = createAsyncThunk(
     try {
       const data = await Promise.all(
         robots.map((robot) => RobotsApi.extinguishRobot(robot.id))
+      ).then((responses) =>
+        responses.reduce((arr, resp) => [...arr, resp.data], [])
       );
       dispatch(fetchRobotInventory());
       return data;
@@ -84,9 +87,20 @@ export const extinguishRobot = createAsyncThunk(
 export const recycleRobots = createAsyncThunk(
   'robotInventory/recycleRobot',
   async (robots: RobotInventoryEntity[], { dispatch }) => {
-    const data = await RobotsApi.recycleRobots(robots.map((robot) => robot.id));
+    const data = await RobotsApi.recycleRobots(
+      robots.map((robot) => robot.id)
+    ).then((resp) => resp.data);
     dispatch(fetchRobotInventory());
     return data;
+  }
+);
+
+export const resetRobots = createAsyncThunk(
+  'robotInventory/resetRobots',
+  async (_, { dispatch }) => {
+    await RobotsApi.resetRobots().then((resp) => resp.data);
+    dispatch(fetchRobotInventory());
+    return Promise.resolve();
   }
 );
 
@@ -95,7 +109,7 @@ export const createShipment = createAsyncThunk(
   async (robots: RobotInventoryEntity[], { dispatch }) => {
     const data = await ShipmentApi.createShipment(
       robots.map((robot) => robot.id)
-    );
+    ).then(() => true);
     dispatch(fetchRobotInventory());
     return data;
   }
@@ -160,10 +174,13 @@ export const robotInventorySlice = createSlice({
       .addCase(createShipment.pending, (state) => {
         state.loadingStatus = 'creating_shipment';
       })
-      .addCase(createShipment.rejected, (state: RobotInventoryState, action) => {
-        state.loadingStatus = 'error';
-        state.error = action.error.message;
-      });
+      .addCase(
+        createShipment.rejected,
+        (state: RobotInventoryState, action) => {
+          state.loadingStatus = 'error';
+          state.error = action.error.message;
+        }
+      );
   },
 });
 
