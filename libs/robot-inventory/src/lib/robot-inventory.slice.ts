@@ -6,7 +6,12 @@ import {
   EntityState,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { Robot, RobotStatus } from '@zigzag/robot-factory/shared';
+import {
+  Robot,
+  RobotsApi,
+  RobotStatus,
+  ShipmentApi,
+} from '@zigzag/robot-factory/shared';
 
 export const ROBOT_INVENTORY_FEATURE_KEY = 'robotInventory';
 
@@ -25,7 +30,8 @@ export interface RobotInventoryState extends EntityState<RobotInventoryEntity> {
     | 'loaded'
     | 'error'
     | 'extinguishing'
-    | 'recycling';
+    | 'recycling'
+    | 'creating_shipment';
   error: string;
 }
 
@@ -50,57 +56,46 @@ export const robotInventoryAdapter = createEntityAdapter<RobotInventoryEntity>()
  */
 export const fetchRobotInventory = createAsyncThunk(
   'robotInventory/fetchStatus',
-  async (_, thunkAPI) => {
-    /**
-     * Replace this with your custom fetch call.
-     * For example, `return myApi.getRobotInventorys()`;
-     * Right now we just return an empty array.
-     */
-    const testRobots: RobotInventoryEntity[] = [
-      {
-        id: 1,
-        configuration: {
-          hasWheels: true,
-          Colour: 'red',
-          hasSentence: false,
-          hasTracks: true,
-          numberOfRotors: 5,
-        },
-        name: 'Robot 1',
-        status: [RobotStatus.ON_FIRE],
-        selected: false,
-      },
-      {
-        id: 2,
-        configuration: {
-          hasWheels: true,
-          Colour: 'blue',
-          hasSentence: false,
-          hasTracks: true,
-          numberOfRotors: 1,
-        },
-        name: 'Robot 2',
-        status: [RobotStatus.LOOSE_SCREWS],
-        selected: false,
-      },
-    ];
-    return Promise.resolve(testRobots);
+  async (_, { rejectWithValue }) => {
+    try {
+      const robots = await RobotsApi.fetchRobots().then((resp) => resp.data);
+      return robots.map((robot) => ({ ...robot, selected: false }));
+    } catch (e) {
+      return rejectWithValue(e);
+    }
   }
 );
 
 export const extinguishRobot = createAsyncThunk(
   'robotInventory/extinguishRobot',
-  async (robots: RobotInventoryEntity[], { dispatch }) => {
-    const data = await Promise.resolve('');
-    dispatch(fetchRobotInventory());
-    return data;
+  async (robots: RobotInventoryEntity[], { dispatch, rejectWithValue }) => {
+    try {
+      const data = await Promise.all(
+        robots.map((robot) => RobotsApi.extinguishRobot(robot.id))
+      );
+      dispatch(fetchRobotInventory());
+      return data;
+    } catch (e) {
+      return rejectWithValue(e);
+    }
   }
 );
 
 export const recycleRobots = createAsyncThunk(
   'robotInventory/recycleRobot',
   async (robots: RobotInventoryEntity[], { dispatch }) => {
-    const data = await Promise.resolve('');
+    const data = await RobotsApi.recycleRobots(robots.map((robot) => robot.id));
+    dispatch(fetchRobotInventory());
+    return data;
+  }
+);
+
+export const createShipment = createAsyncThunk(
+  'robotInventory/createShiipment',
+  async (robots: RobotInventoryEntity[], { dispatch }) => {
+    const data = await ShipmentApi.createShipment(
+      robots.map((robot) => robot.id)
+    );
     dispatch(fetchRobotInventory());
     return data;
   }
@@ -159,6 +154,13 @@ export const robotInventorySlice = createSlice({
         state.loadingStatus = 'recycling';
       })
       .addCase(recycleRobots.rejected, (state: RobotInventoryState, action) => {
+        state.loadingStatus = 'error';
+        state.error = action.error.message;
+      })
+      .addCase(createShipment.pending, (state) => {
+        state.loadingStatus = 'creating_shipment';
+      })
+      .addCase(createShipment.rejected, (state: RobotInventoryState, action) => {
         state.loadingStatus = 'error';
         state.error = action.error.message;
       });

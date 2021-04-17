@@ -4,8 +4,10 @@ import { Robot } from '@zigzag/robot-factory/shared';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  createShipment,
   extinguishRobot,
   recycleRobots,
+  selectedEntities,
   selectOnFireRobots,
   selectRecyclableRobots,
 } from '../robot-inventory.slice';
@@ -24,6 +26,7 @@ export interface RobotActionsProps {}
 export function RobotActions(props: RobotActionsProps) {
   const onFireRobots = useSelector(selectOnFireRobots);
   const recyclableRobots = useSelector(selectRecyclableRobots);
+  const selectedRobots = useSelector(selectedEntities);
   const styles = useStyles();
   const dispatch = useDispatch();
 
@@ -33,6 +36,10 @@ export function RobotActions(props: RobotActionsProps) {
 
   const handleRecycleRobots = () => {
     dispatch(recycleRobots(recyclableRobots));
+  };
+
+  const handleCreateShipment = () => {
+    dispatch(createShipment(selectedRobots));
   };
 
   return (
@@ -53,6 +60,15 @@ export function RobotActions(props: RobotActionsProps) {
         onClick={handleRecycleRobots}
       >
         Recycle
+      </Button>
+      <Button
+        variant="outlined"
+        color="primary"
+        className={styles['ml-3']}
+        disabled={selectedRobots.length === 0}
+        onClick={handleCreateShipment}
+      >
+        Ship!
       </Button>
     </Box>
   );
