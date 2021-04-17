@@ -1,1 +1,2 @@
+export * from './lib/robot-inventory.slice';
 export * from './lib/robot-inventory';
