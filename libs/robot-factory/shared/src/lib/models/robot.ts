@@ -5,5 +5,5 @@ export interface Robot {
   id: number;
   name: string;
   configuration: RobotConfiguration;
-  status: RobotStatus;
+  status: RobotStatus[];
 }

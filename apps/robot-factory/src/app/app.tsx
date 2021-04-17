@@ -3,25 +3,20 @@ import styles from './app.module.scss';
 import { Route } from 'react-router-dom';
 
 import { RobotInventory } from '@zigzag/robot-inventory';
+import { AppBar, Container, Box, Toolbar, Typography } from '@material-ui/core';
 
 export function App() {
   return (
-    <div className={styles.app}>
-      {/* <div role="navigation">
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/robot-inventory">RobotInventory</Link>
-          </li>
-          <li>
-            <Link to="/page-2">Page 2</Link>
-          </li>
-        </ul>
-      </div> */}
-      <Route path="/" component={RobotInventory} />
-    </div>
+    <Box>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6">Robot Factory</Typography>
+        </Toolbar>
+      </AppBar>
+      <Container className={styles.app}>
+        <Route path="/" component={RobotInventory} />
+      </Container>
+    </Box>
   );
 }
 
