@@ -13,8 +13,13 @@ import {
   robotInventoryReducer,
 } from '@zigzag/robot-inventory';
 
+import { SHIPMENT_FEATURE_KEY, shipmentReducer } from '@zigzag/robot-inventory';
+
 const store = configureStore({
-  reducer: { [ROBOT_INVENTORY_FEATURE_KEY]: robotInventoryReducer },
+  reducer: {
+    [SHIPMENT_FEATURE_KEY]: shipmentReducer,
+    [ROBOT_INVENTORY_FEATURE_KEY]: robotInventoryReducer,
+  },
   // Additional middleware can be passed to this array
   middleware: [...getDefaultMiddleware()],
   devTools: process.env.NODE_ENV !== 'production',

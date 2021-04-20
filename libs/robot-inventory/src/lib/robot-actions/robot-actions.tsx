@@ -4,7 +4,6 @@ import { Restore } from '@material-ui/icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  createShipment,
   extinguishRobot,
   recycleRobots,
   resetRobots,
@@ -12,6 +11,7 @@ import {
   selectOnFireRobots,
   selectRecyclableRobots,
 } from '../robot-inventory.slice';
+import { createShipment } from '../shipment.slice';
 
 import './robot-actions.module.scss';
 
@@ -39,10 +39,6 @@ export function RobotActions(props: RobotActionsProps) {
     dispatch(recycleRobots(recyclableRobots));
   };
 
-  const handleCreateShipment = () => {
-    dispatch(createShipment(selectedRobots));
-  };
-
   const handleResetRobots = () => {
     dispatch(resetRobots());
   };
@@ -65,15 +61,6 @@ export function RobotActions(props: RobotActionsProps) {
         onClick={handleRecycleRobots}
       >
         Recycle
-      </Button>
-      <Button
-        variant="outlined"
-        color="primary"
-        className={styles['ml-3']}
-        disabled={selectedRobots.length === 0}
-        onClick={handleCreateShipment}
-      >
-        Ship!
       </Button>
       <Box ml={'auto'}>
         <Button

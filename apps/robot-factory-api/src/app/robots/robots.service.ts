@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Robot, RobotId, RobotStatus } from '@zigzag/robot-factory/shared';
+import { dummyRobots } from './dummy-robots';
 
 @Injectable()
 export class RobotsService {
@@ -10,44 +11,11 @@ export class RobotsService {
   }
 
   reset(): void {
-    this.robots = [
-      {
-        id: 1,
-        configuration: {
-          hasWheels: true,
-          Colour: 'red',
-          hasSentence: false,
-          hasTracks: true,
-          numberOfRotors: 5,
-        },
-        name: 'Robot 1',
-        status: [RobotStatus.ON_FIRE],
-      },
-      {
-        id: 2,
-        configuration: {
-          hasWheels: true,
-          Colour: 'blue',
-          hasSentence: false,
-          hasTracks: true,
-          numberOfRotors: 1,
-        },
-        name: 'Robot 2',
-        status: [RobotStatus.LOOSE_SCREWS],
-      },
-      {
-        id: 3,
-        configuration: {
-          hasWheels: true,
-          Colour: 'blue',
-          hasSentence: true,
-          hasTracks: true,
-          numberOfRotors: 3,
-        },
-        name: 'Robot 3',
-        status: [RobotStatus.ON_FIRE],
-      },
-    ];
+    this.robots = dummyRobots();
+  }
+
+  findRobotById(robotId: RobotId): Robot {
+    return this.robots.find((robot) => robot.id === robotId);
   }
 
   deleteRobotById(robotId: RobotId): Robot {
@@ -58,9 +26,15 @@ export class RobotsService {
     return this.robots.splice(index, 1)[0];
   }
 
-  extinguishRobotById(robotId: RobotId): boolean {
-    this.deleteRobotById(robotId);
-    return true;
+  extinguishRobotById(robotId: RobotId): Robot {
+    const robot = this.findRobotById(robotId);
+    if (!robot) {
+      throw new NotFoundException(robotId);
+    }
+    robot.status = robot.status.filter(
+      (status) => status !== RobotStatus.ON_FIRE
+    );
+    return robot;
   }
 
   recycleRobots(robotIds: RobotId[]): Robot[] {

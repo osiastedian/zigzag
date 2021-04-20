@@ -1,13 +1,14 @@
-import { getGreeting } from '../support/app.po';
-
 describe('robot-factory', () => {
-  beforeEach(() => cy.visit('/'));
+  beforeEach(() => {
+    cy.request('GET', '/api/robots/reset');
+    cy.visit('/');
+  });
 
-  it('should display welcome message', () => {
-    // Custom command example, see `../support/commands.ts` file
-    cy.login('my-email@something.com', 'myPassword');
-
-    // Function helper example, see `../support/app.po.ts` file
-    getGreeting().contains('Welcome to robot-factory!');
+  it('should extinguish on_fire robots', () => {
+    cy.intercept('GET', '/api/robots').as('loadRobots');
+    cy.intercept('GET', '/api/robots/extinguish', (req) => {
+      expect(req.body).to.deep.equal([2]);
+    }).as('extinguishRobots');
+    cy.wait(['@loadRobots', '@extinguishRobots', '@loadRobots']);
   });
 });

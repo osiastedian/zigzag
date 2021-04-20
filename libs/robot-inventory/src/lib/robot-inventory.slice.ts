@@ -6,12 +6,7 @@ import {
   EntityState,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import {
-  Robot,
-  RobotsApi,
-  RobotStatus,
-  ShipmentApi,
-} from '@zigzag/robot-factory/shared';
+import { Robot, RobotsApi, RobotStatus } from '@zigzag/robot-factory/shared';
 
 export const ROBOT_INVENTORY_FEATURE_KEY = 'robotInventory';
 
@@ -21,6 +16,7 @@ export const ROBOT_INVENTORY_FEATURE_KEY = 'robotInventory';
 export interface RobotInventoryEntity extends Robot {
   id: number;
   selected: boolean;
+  recyclable: boolean;
 }
 
 export interface RobotInventoryState extends EntityState<RobotInventoryEntity> {
@@ -60,7 +56,11 @@ export const fetchRobotInventory = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const robots = await RobotsApi.fetchRobots().then((resp) => resp.data);
-      return robots.map((robot) => ({ ...robot, selected: false }));
+      return robots.map((robot) => ({
+        ...robot,
+        selected: false,
+        recyclable: isRecyclable(robot),
+      }));
     } catch (e) {
       return rejectWithValue(e);
     }
@@ -101,17 +101,6 @@ export const resetRobots = createAsyncThunk(
     await RobotsApi.resetRobots().then((resp) => resp.data);
     dispatch(fetchRobotInventory());
     return Promise.resolve();
-  }
-);
-
-export const createShipment = createAsyncThunk(
-  'robotInventory/createShiipment',
-  async (robots: RobotInventoryEntity[], { dispatch }) => {
-    const data = await ShipmentApi.createShipment(
-      robots.map((robot) => robot.id)
-    ).then(() => true);
-    dispatch(fetchRobotInventory());
-    return data;
   }
 );
 
@@ -170,17 +159,7 @@ export const robotInventorySlice = createSlice({
       .addCase(recycleRobots.rejected, (state: RobotInventoryState, action) => {
         state.loadingStatus = 'error';
         state.error = action.error.message;
-      })
-      .addCase(createShipment.pending, (state) => {
-        state.loadingStatus = 'creating_shipment';
-      })
-      .addCase(
-        createShipment.rejected,
-        (state: RobotInventoryState, action) => {
-          state.loadingStatus = 'error';
-          state.error = action.error.message;
-        }
-      );
+      });
   },
 });
 
@@ -250,12 +229,69 @@ export const selectOnFireRobots = createSelector(selectedEntities, (entities) =>
   )
 );
 
+export const isRecyclable = (robot: Robot): boolean => {
+  if (
+    robot.configuration.numberOfRotors < 3 ||
+    robot.configuration.numberOfRotors > 8
+  ) {
+    return true;
+  }
+
+  if (robot.configuration.Colour === 'blue') {
+    return true;
+  }
+
+  if (robot.configuration.hasWheels) {
+    if (
+      robot.configuration.hasTracks ||
+      robot.status.some((status) => status === RobotStatus.RUSTY)
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    robot.configuration.hasSentience &&
+    robot.status.some((status) => status === RobotStatus.LOOSE_SCREWS)
+  ) {
+    return true;
+  }
+
+  return robot.status.some((status) => status === RobotStatus.ON_FIRE);
+};
+
+export const recyclableRobots = createSelector(
+  selectAllRobotInventory,
+  (entities) => entities.filter((entity) => entity.recyclable)
+);
+
+export const nonRecyclableRobots = createSelector(
+  selectAllRobotInventory,
+  (entities) => entities.filter((entity) => !entity.recyclable)
+);
+
+const isFactorySecond = (robot: Robot): boolean => {
+  return robot.status.some(
+    (status) =>
+      status === RobotStatus.RUSTY ||
+      status === RobotStatus.LOOSE_SCREWS ||
+      status === RobotStatus.PAINT_SCRATCHED
+  );
+};
+
+export const passedQARobots = createSelector(
+  nonRecyclableRobots,
+  (entities) => entities.filter((entity) => !isFactorySecond(entity))
+);
+
+export const factorySecondARobots = createSelector(
+  nonRecyclableRobots,
+  (entities) => entities.filter((entity) => isFactorySecond(entity))
+);
+
 export const selectRecyclableRobots = createSelector(
-  selectedEntities,
-  (entities) =>
-    entities.filter((entity) =>
-      entity.status.some((status) => status === RobotStatus.LOOSE_SCREWS)
-    )
+  recyclableRobots,
+  (entities) => entities.filter((entity) => entity.selected)
 );
 
 export const getLoadingState = createSelector(

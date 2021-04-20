@@ -18,11 +18,7 @@ export class RobotsController {
 
   @Post(':id/extinguish')
   extinguishRobot(@Param('id') robotId: RobotId) {
-    const success = this.robotsService.extinguishRobotById(+robotId);
-    return {
-      robotId,
-      success,
-    };
+    return this.robotsService.extinguishRobotById(+robotId);
   }
 
   @Post('recycle')

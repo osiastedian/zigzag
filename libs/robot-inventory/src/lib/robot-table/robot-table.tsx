@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -7,12 +8,20 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@material-ui/core';
 
-import { Fireplace } from '@material-ui/icons';
+import {
+  Fireplace,
+  FormatPaint,
+  Settings,
+  PlusOne,
+  Check,
+  Close,
+} from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 
-import { red } from '@material-ui/core/colors';
+import { red, brown, cyan, amber, green } from '@material-ui/core/colors';
 
 import { RobotStatus } from '@zigzag/robot-factory/shared';
 import './robot-table.module.scss';
@@ -20,40 +29,39 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getLoadingState,
   isAllSelected,
-  selectAllRobotInventory,
   isSomeSelected,
   robotInventoryActions,
+  recyclableRobots,
 } from '../robot-inventory.slice';
 
 function LoadingRow() {
+  const cols = Array(8).fill(1);
   return (
     <TableRow>
-      <TableCell>
-        <Skeleton></Skeleton>
-      </TableCell>
-      <TableCell>
-        <Skeleton></Skeleton>
-      </TableCell>
-      <TableCell>
-        <Skeleton></Skeleton>
-      </TableCell>
-      <TableCell>
-        <Skeleton></Skeleton>
-      </TableCell>
-      <TableCell>
-        <Skeleton></Skeleton>
-      </TableCell>
+      {cols.map((v, i) => (
+        <TableCell key={i}>
+          <Skeleton></Skeleton>
+        </TableCell>
+      ))}
     </TableRow>
+  );
+}
+
+function BooleanIcon(props: { value: boolean }) {
+  return props.value ? (
+    <Check htmlColor={green[500]} />
+  ) : (
+    <Close htmlColor={red[500]} />
   );
 }
 
 /* eslint-disable-next-line */
 export interface RobotTableProps {}
 
-export function RobotTable(props: RobotTableProps) {
+export function RecyclableRobotTable(props: RobotTableProps) {
   const loadingRows = Array(5).fill(1);
   const loadingState = useSelector(getLoadingState);
-  const entities = useSelector(selectAllRobotInventory);
+  const entities = useSelector(recyclableRobots);
   const allSelected = useSelector(isAllSelected);
   const someSelected = useSelector(isSomeSelected);
   const dispatch = useDispatch();
@@ -75,11 +83,15 @@ export function RobotTable(props: RobotTableProps) {
       case RobotStatus.ON_FIRE:
         return <Fireplace key={status} style={{ color: red[500] }}></Fireplace>;
       case RobotStatus.LOOSE_SCREWS:
-        return <Fireplace key={status} style={{ color: red[500] }}></Fireplace>;
+        return <Settings key={status} style={{ color: cyan[500] }}></Settings>;
       case RobotStatus.PAINT_SCRATCHED:
-        return <Fireplace key={status} style={{ color: red[500] }}></Fireplace>;
+        return (
+          <FormatPaint key={status} style={{ color: amber[500] }}></FormatPaint>
+        );
       case RobotStatus.RUSTY:
-        return <Fireplace key={status} style={{ color: red[500] }}></Fireplace>;
+        return (
+          <Fireplace key={status} style={{ color: brown[500] }}></Fireplace>
+        );
     }
   };
 
@@ -99,6 +111,9 @@ export function RobotTable(props: RobotTableProps) {
             <TableCell align="right">Status</TableCell>
             <TableCell align="right"># of Rotors</TableCell>
             <TableCell align="right">Color</TableCell>
+            <TableCell align="right">Wheels?</TableCell>
+            <TableCell align="right">Tracks?</TableCell>
+            <TableCell align="right">Sentience?</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -125,13 +140,32 @@ export function RobotTable(props: RobotTableProps) {
                     {robot.name}
                   </TableCell>
                   <TableCell align="right">
-                    {robot.status.map((status) => getStatusIcon(status))}
+                    {robot.status.map((status) => (
+                      <Tooltip key={status} title={status}>
+                        {getStatusIcon(status)}
+                      </Tooltip>
+                    ))}
                   </TableCell>
                   <TableCell align="right">
                     {robot.configuration.numberOfRotors}
                   </TableCell>
                   <TableCell align="right">
                     {robot.configuration.Colour}
+                  </TableCell>
+                  <TableCell align="right">
+                    <BooleanIcon
+                      value={robot.configuration.hasWheels}
+                    ></BooleanIcon>
+                  </TableCell>
+                  <TableCell align="right">
+                    <BooleanIcon
+                      value={robot.configuration.hasTracks}
+                    ></BooleanIcon>
+                  </TableCell>
+                  <TableCell align="right">
+                    <BooleanIcon
+                      value={robot.configuration.hasSentience}
+                    ></BooleanIcon>
                   </TableCell>
                 </TableRow>
               ))}
@@ -141,4 +175,4 @@ export function RobotTable(props: RobotTableProps) {
   );
 }
 
-export default RobotTable;
+export default RecyclableRobotTable;

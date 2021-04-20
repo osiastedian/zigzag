@@ -1,5 +1,5 @@
 export interface RobotConfiguration {
-  hasSentence: boolean;
+  hasSentience: boolean;
   hasWheels: boolean;
   hasTracks: boolean;
   numberOfRotors: number;
